@@ -271,14 +271,10 @@
     (catch #?(:clj Exception :cljs js/Error) e
         (->ParseError v))))
 
-(defn- normalize-params [params]
-  (when (seq params)
-    (let [params (if (string? params)
-                   (fu/decode-form-data params)
-                   params)]
-      (if (keyword? (ffirst params))
-        (stringify-keys params)
-        (:params (fu/nested-params-request {:params params}))))))
+(defn- normalize-params [params] 
+ (-> params 
+  stringify-keys 
+  (#'fu/nest-params fu/parse-nested-keys)))
 
 (defn parse-params
   "Given a form specification or sequence of field specifications and a Ring
